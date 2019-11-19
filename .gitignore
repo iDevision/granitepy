@@ -1,0 +1,7 @@
+*.pyc
+*.png
+*.ini
+*.iml
+*.xml
+venv/
+.idea/
