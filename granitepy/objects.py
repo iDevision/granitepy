@@ -17,6 +17,7 @@ class Track:
         Whether the current track can be seeked.
     position: :class:`int`
     """
+
     def __init__(self, _id, data: dict):
         self.id = _id
         self.data = data

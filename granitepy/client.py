@@ -1,114 +1,58 @@
 import asyncio
-import logging
 
 from discord.ext import commands
 
 from .events import Event
-from .exceptions import NodesUnavailable
+from .exceptions import NoNodesAvailable
 from .node import Node
 from .player import Player
 
-log = logging.getLogger(__name__)
-
 
 class Client:
-    """The Python implementation of a client to connect an Andesite node.
 
-    Attributes
-    ----------
-    bot: :class:`commands.Bot`
-    loop: :class:`asyncio.BaseEventLoop`
-    nodes: Dict[:class:`str`, :class:`.Node`"""
-    _event_hooks = {}
-
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, loop=None):
 
         self.bot = bot
-        self.loop = bot.loop or asyncio.get_event_loop()
+        self.loop = loop or asyncio.get_event_loop()
 
         self.nodes = {}
 
         bot.add_listener(self.update_handler, "on_socket_response")
 
     def __repr__(self):
-        player_count = len(self.players.values())
-        return f"<GraniteClient player_count={player_count}>"
+        return f"<GraniteClient node_count={len(self.nodes.values())} player_count={len(self.players.values())}>"
 
     @property
     def players(self):
-        """Returns a mapping of guilds and their respective player.
+        return {player.guild_id: player for player in [node.players.values() for node in self.nodes.values()]}
 
-        Returns
-        -------
-        Dict[:class:`int`, :class:`.Player`"""
-        return self._get_players()
+    async def create_node(self, host: str, port: int, password: str, rest_uri: str, identifier: str, shard_id: int = None):
 
-    def _get_players(self):
-        players = []
-
-        for node in self.nodes.values():
-            players.extend(node.players.values())
-
-        return {player.guild_id: player for player in players}
-
-    async def start_node(
-            self, host: str, port: int, *, rest_uri: str, password: str, identifier
-    ):
-        """Prepares a new music node.
-
-        .. note::  The node will become available once it's websocket connects.
-
-        Parameters
-        ----------
-        host: :class:`str`
-        port: :class:`int`
-        rest_uri: :class:`str`
-        password: Optional[:class:`str`]
-        identifier: :class:`str`
-
-        Returns
-        -------
-        :class:`.Node`"""
         await self.bot.wait_until_ready()
 
-        node = Node(
-            host,
-            port,
-            self.bot.user.id,
-            client=self,
-            rest_uri=rest_uri,
-            password=password,
-            identifier=identifier,
-        )
-        await node.connect(self.bot)
+        node = Node(client=self, bot=self.bot, host=host, port=port, password=password, rest_uri=rest_uri, identifier=identifier, shard_id=shard_id)
+        await node.connect()
 
         self.nodes[identifier] = node
         return node
 
-    def get_player(self, guild_id: int, cls=None):
-        """Gets a player corresponding to the guild.
+    def get_player(self, guild_id: int, player_class=Player):
 
-        Parameters
-        ----------
-        guild_id: :class:`int`
-        cls: Optional[:class:`.Player`]
-            An optional subclass of :class:`.Player`."""
+        if not self.nodes:
+            raise NoNodesAvailable("No nodes available")
+
         try:
             return self.players[guild_id]
         except KeyError:
-            pass
+            nodes = list(self.nodes.values())
+            player = player_class(self.bot, guild_id, nodes[0])
 
-        if not self.nodes:
-            raise NodesUnavailable("No nodes available")
+            # TODO Implement a way to get the best node, and use it here.
+            nodes[0].players[guild_id] = player
+            return player
 
-        nodes = list(self.nodes.values())
-        if not cls:
-            cls = Player
-
-        player = cls(self.bot, guild_id, nodes[0])
-        nodes[0].players[guild_id] = player
-
-        return player
+    async def dispatch(self, event: Event):
+        self.bot.dispatch("andesite_" + event.name, event)
 
     async def update_handler(self, data):
         if not data:
@@ -124,7 +68,6 @@ class Client:
                 await player._voice_server_update(data["d"])
 
         elif data["t"] == "VOICE_STATE_UPDATE":
-            # logger.warning(data)
             if int(data["d"]["user_id"]) != self.bot.user.id:
                 return
 
@@ -138,14 +81,3 @@ class Client:
                 await player._voice_state_update(data["d"])
         else:
             return
-
-    async def dispatch(self, event: Event):
-        """Dispatches events, WIP.
-
-        Parameters
-        ----------
-        event: :class:`.Event`
-            The event to dispatch.
-        """
-        event_name = "andesite_" + event.name
-        self.bot.dispatch(event_name, event)

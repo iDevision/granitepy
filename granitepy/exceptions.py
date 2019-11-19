@@ -2,7 +2,7 @@ class GraniteException(Exception):
     """Base of all exceptions."""
 
 
-class NodesUnavailable(GraniteException):
+class NoNodesAvailable(GraniteException):
     """Either no nodes are currently active or all current nodes are not available."""
 
 

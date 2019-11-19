@@ -1,21 +1,17 @@
 import json
-import logging
 import sys
 import traceback
 
 import websockets
-from discord.ext import commands
 
 from . import events
 from . import exceptions
 
-log = logging.getLogger(__name__)
-
 
 class WebSocket:
-    def __init__(
-            self, bot: commands.Bot, host: str, port: int, password: str, node
-    ):
+
+    def __init__(self, bot, node, host: str, port: int, password: str):
+
         self.bot = bot
         self.host = host
         self.port = port
