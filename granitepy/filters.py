@@ -1,5 +1,4 @@
 class Filter:
-    # TODO: Add comparisons
     pass
 
 

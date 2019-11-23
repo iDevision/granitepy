@@ -54,6 +54,7 @@ class Player:
     async def update_state(self, state):
 
         self.last_state = state
+
         self.last_update = time.time() * 1000
 
         self.last_position = state.get("position", 0)
@@ -163,27 +164,24 @@ class Player:
             raise TypeError("All filters must derive from `Filter`")
 
         await self.node.send(json.dumps({'op': 'filters', 'guildId': str(self.guild_id)}, **filter_type.payload))
+        return filter_type
 
     async def set_timescale(self, *, speed: float = 1, pitch: float = 1, rate: float = 1):
 
         timescale = filters.Timescale(speed=speed, pitch=pitch, rate=rate)
-        await self.set_filters(timescale)
-        return timescale
+        return await self.set_filters(timescale)
 
     async def set_karaoke(self, *, level: float = 1, mono_level: float = 1, filter_band: float = 220, filter_width: float = 100):
 
         karaoke = filters.Karaoke(level=level, mono_level=mono_level, filter_band=filter_band, filter_width=filter_width)
-        await self.set_filters(karaoke)
-        return karaoke
+        return await self.set_filters(karaoke)
 
     async def set_tremolo(self, *, frequency: float = 2, depth: float = 0.5):
 
         tremolo = filters.Tremolo(frequency=frequency, depth=depth)
-        await self.set_filters(tremolo)
-        return tremolo
+        return await self.set_filters(tremolo)
 
     async def set_vibrato(self, frequency: float = 2, depth: float = 0.5):
 
         vibrato = filters.Vibrato(frequency=frequency, depth=depth)
-        await self.set_filters(vibrato)
-        return vibrato
+        return await self.set_filters(vibrato)

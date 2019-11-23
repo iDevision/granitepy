@@ -1,9 +1,9 @@
 import asyncio
-import aiohttp
 import random
 
+import aiohttp
+
 from . import exceptions
-from . import events
 from .node import Node
 from .player import Player
 
@@ -60,9 +60,6 @@ class Client:
     def get_node(self):
         # TODO Better method of getting the best node.
         return random.choice([node for node in self.nodes.values() if node.available is True])
-
-    async def dispatch(self, event: events.GranitepyEvent):
-        self.bot.dispatch(f"andesite_{event.name}", event)
 
     async def update_handler(self, data):
 

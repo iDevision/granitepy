@@ -21,8 +21,8 @@ class Node:
         self.identifier = identifier
         self.shard_id = shard_id
 
-        self.websocket = None
         self.available = False
+        self.websocket = None
         self.task = None
 
         self.connection_id = None
@@ -81,26 +81,19 @@ class Node:
                 break
 
             if data:
-
                 data = json.loads(data)
-
                 op = data.get("op", None)
-
                 if op == "connection-id":
                     self.connection_id = data.get("id")
-
                 elif op == "metadata":
                     self.metadata = objects.Metadata(data["data"])
-
                 elif op == "stats":
                     self.stats = data["stats"]
-
                 elif op == "player-update":
                     player = self.players.get(int(data["guildId"]))
                     if not player:
                         continue
                     await player.update_state(data)
-
                 elif op == "event":
                     await self.dispatch_event(data)
 
@@ -111,14 +104,13 @@ class Node:
             return
 
         event = getattr(events, data["type"], None)
+        event = event(player, data)
 
-        await self.client.dispatch(event(player, data))
+        self.bot.dispatch(f"andesite_{event.name}", event)
 
     async def send(self, **data):
+
         try:
             await self.websocket.send(json.dumps(data))
         except websockets.ConnectionClosed:
             raise exceptions.NodeConnectionClosed(f"The connection to the websocket of node '{self.identifier}' is closed.")
-
-
-
