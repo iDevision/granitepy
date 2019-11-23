@@ -37,3 +37,19 @@ class Playlist:
 
     def __repr__(self):
         return f"<Playlist name={self.name} tracks={len(self.tracks)}>"
+
+
+class Metadata:
+
+    def __init__(self, data: dict):
+
+        self.version = data.get("version", 0)
+        self.version_major = data.get("version-major", 0)
+        self.version_minor = data.get("version-minor", 0)
+        self.version_revision = data.get("version-revision", 0)
+        self.version_commit = data.get("version-commit", 0)
+        self.version_build = data.get("version-build", 0)
+        self.node_region = data.get("node-region", None)
+        self.node_id = data.get("node-id", None)
+        self.enabled_sources = data.get("enabled-sources", None)
+        self.loaded_plugins = data.get("loaded-plugins", None)

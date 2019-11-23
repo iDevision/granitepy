@@ -1,5 +1,6 @@
 import websockets
 import json
+import time
 
 from . import exceptions
 from . import events
@@ -28,12 +29,15 @@ class Node:
         self.connection_id = None
         self.metadata = None
         self.stats = None
+        self.ping = None
 
         self.headers = {
             "Authorization": self.password,
             "Andesite-Resume-Id": self.connection_id,
             "User-Id": self.bot.user.id
         }
+
+        self.time = 0
 
     def __repr__(self):
         return f"<GraniteNode player_count={len(self.players.keys())} available={self.available}>"
@@ -86,7 +90,7 @@ class Node:
                     self.connection_id = data.get("id")
 
                 elif op == "metadata":
-                    self.metadata = data["data"]
+                    self.metadata = objects.Metadata(data["data"])
 
                 elif op == "stats":
                     self.stats = data["stats"]
@@ -114,24 +118,4 @@ class Node:
         if self.ws_connected:
             await self.websocket.send(json.dumps(data))
 
-    async def get_tracks(self, query: str):
-
-        async with self.client.session.get(f"{self.rest_uri}/loadtracks", params=dict(identifier=query), headers={"Authorization": self.password}) as response:
-            data = await response.json()
-
-        if data["loadType"] == "NO_MATCHES":
-            return None
-
-        elif data["loadType"] == "TRACK_LOADED":
-            return objects.Track(track=data["tracks"][0]["track"], data=data["tracks"][0]["info"])
-
-        elif data['loadType'] == 'PLAYLIST_LOADED':
-            return objects.Playlist(data=data)
-
-        elif data['loadType'] == 'SEARCH_RESULT':
-            tracks = [objects.Track(track=track["track"], data=track["info"]) for track in data["tracks"]]
-            return tracks
-
-        else:
-            raise exceptions.TrackLoadError(f"There was an error or severity '{data['severity']}' while loading tracks.\n\n{data['cause']}")
 

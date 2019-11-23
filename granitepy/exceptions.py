@@ -14,11 +14,6 @@ class TrackLoadError(GraniteException):
     """There was an error while loading tracks."""
 
 
-
-
-
-
-
 class NodeConnectionClosed(GraniteException):
     """There was an error while connecting to a node."""
 
@@ -26,6 +21,3 @@ class NodeConnectionClosed(GraniteException):
 class InvalidCredentials(GraniteException):
     """Invalid credentials were passed."""
 
-
-class HTTPException(GraniteException):
-    """HTTP request failed."""
