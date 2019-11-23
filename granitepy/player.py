@@ -1,36 +1,13 @@
 import json
-import logging
 import time
 
 from discord.ext import commands
 
 from .filters import *
 
-logger = logging.getLogger(__name__)
-
 
 class Player:
-    """Handles every single connection, websocket, node and so on.
 
-    Parameters
-    ----------
-    bot: :class:`commands.Bot`
-    guild_id: :class:`int`
-    node: :class:`.Node`
-
-    Attributes
-    ----------
-    bot: :class:`commands.Bot`
-    guild_id: :class:`int`
-    node: :class:`.Node`
-    last_update: Optional[:class:`float`]
-    last_position: Optional[:class:`int`]
-    last_state: ?
-    position_timestamp: Optional[:class:`int`]
-    volume: :class:`int`
-    paused: :class:`bool`
-    current: Optional[:class:`.Track`]
-    channel_id: Optional[:class:`int`]"""
     def __init__(self, bot: commands.bot, guild_id: int, node):
         self.bot = bot
         self.guild_id = guild_id

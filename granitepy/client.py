@@ -1,19 +1,20 @@
 import asyncio
+import aiohttp
+import random
 
-from discord.ext import commands
-
-from .events import Event
-from .exceptions import NoNodesAvailable
+from . import exceptions
+from . import events
 from .node import Node
 from .player import Player
 
 
 class Client:
 
-    def __init__(self, bot: commands.Bot, loop=None):
+    def __init__(self, bot, loop=None, session=None):
 
         self.bot = bot
         self.loop = loop or asyncio.get_event_loop()
+        self.session = session or aiohttp.ClientSession()
 
         self.nodes = {}
 
@@ -24,7 +25,28 @@ class Client:
 
     @property
     def players(self):
-        return {player.guild_id: player for player in [node.players.values() for node in self.nodes.values()]}
+        players = []
+        for node in self.nodes.values():
+            players.extend(node.players.values())
+        return {player.guild_id: player for player in players}
+
+    def get_player(self, guild_id: int, cls=None):
+
+        if not self.nodes:
+            raise exceptions.NodesUnavailable("There are no nodes currently available.")
+
+        try:
+            return self.players[guild_id]
+        except KeyError:
+
+            if not cls:
+                cls = Player
+
+            node = self.get_node()
+            player = cls(self.bot, guild_id, node)
+
+            node.players[guild_id] = player
+            return player
 
     async def create_node(self, host: str, port: int, password: str, rest_uri: str, identifier: str, shard_id: int = None):
 
@@ -33,28 +55,17 @@ class Client:
         node = Node(client=self, bot=self.bot, host=host, port=port, password=password, rest_uri=rest_uri, identifier=identifier, shard_id=shard_id)
         await node.connect()
 
-        self.nodes[identifier] = node
-        return node
+        self.nodes[node.identifier] = node
 
-    def get_player(self, guild_id: int, player_class=Player):
+    def get_node(self):
+        # TODO Better method of getting the best node.
+        return random.choice([node for node in self.nodes.values() if node.available is True])
 
-        if not self.nodes:
-            raise NoNodesAvailable("No nodes available")
-
-        try:
-            return self.players[guild_id]
-        except KeyError:
-            nodes = list(self.nodes.values())
-            player = player_class(self.bot, guild_id, nodes[0])
-
-            # TODO Implement a way to get the best node, and use it here.
-            nodes[0].players[guild_id] = player
-            return player
-
-    async def dispatch(self, event: Event):
-        self.bot.dispatch("andesite_" + event.name, event)
+    async def dispatch(self, event: events.GranitepyEvent):
+        self.bot.dispatch(f"andesite_{event.name}", event)
 
     async def update_handler(self, data):
+
         if not data:
             return
 
@@ -62,22 +73,22 @@ class Client:
             guild_id = int(data["d"]["guild_id"])
             try:
                 player = self.players[guild_id]
+                await player.voice_server_update(data["d"])
             except KeyError:
-                pass
-            else:
-                await player._voice_server_update(data["d"])
+                return
 
         elif data["t"] == "VOICE_STATE_UPDATE":
+
             if int(data["d"]["user_id"]) != self.bot.user.id:
                 return
 
             guild_id = int(data["d"]["guild_id"])
             try:
                 player = self.players[guild_id]
+                await player.voice_state_update(data["d"])
             except KeyError:
                 pass
 
-            else:
-                await player._voice_state_update(data["d"])
         else:
             return
+
