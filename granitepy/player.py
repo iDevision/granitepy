@@ -42,6 +42,9 @@ class Player:
         if not self.is_playing:
             return 0
 
+        if not self.current:
+            return 0
+
         if self.paused:
             return min(self.last_position, self.current.length)
 
@@ -159,7 +162,7 @@ class Player:
         if not issubclass(filter_type.__class__, filters.Filter):
             raise TypeError("All filters must derive from `Filter`")
 
-        await self.node.send(json.dumps({'op': 'filters', 'guildId': str(self.guild_id)}, **filter_type._payload))
+        await self.node.send(json.dumps({'op': 'filters', 'guildId': str(self.guild_id)}, **filter_type.payload))
 
     async def set_timescale(self, *, speed: float = 1, pitch: float = 1, rate: float = 1):
 
