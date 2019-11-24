@@ -1,11 +1,14 @@
 class Filter:
-    pass
+
+    def __init__(self):
+        self.payload = None
 
 
 class Karaoke(Filter):
 
     def __init__(self, *, level, mono_level, filter_band, filter_width):
 
+        super().__init__()
         self.level = level
         self.mono_level = mono_level
         self.filter_band = filter_band
@@ -21,6 +24,7 @@ class Timescale(Filter):
 
     def __init__(self, *, speed, pitch, rate):
 
+        super().__init__()
         if not speed > 0:
             pass
 
@@ -43,6 +47,7 @@ class Tremolo(Filter):
 
     def __init__(self, *, frequency, depth):
 
+        super().__init__()
         if not frequency > 0:
             pass
 
@@ -59,6 +64,8 @@ class Tremolo(Filter):
 class Vibrato(Filter):
 
     def __init__(self, *, frequency, depth):
+
+        super().__init__()
 
         if not 0 < frequency <= 14:
             pass

@@ -1,4 +1,5 @@
 import json
+import time
 
 import websockets
 
@@ -93,9 +94,11 @@ class Node:
                     player = self.players.get(int(data["guildId"]))
                     if not player:
                         continue
-                    await player.update_state(data)
+                    await player.update_state(data["state"])
                 elif op == "event":
                     await self.dispatch_event(data)
+                elif op == "pong":
+                    self.bot.dispatch("node_ping", time.time())
 
     async def dispatch_event(self, data):
 
@@ -107,6 +110,14 @@ class Node:
         event = event(player, data)
 
         self.bot.dispatch(f"andesite_{event.name}", event)
+
+    async def ping(self):
+        start_time = time.time()
+        await self.send(op="ping")
+
+        end_time = await self.bot.wait_for("node_ping")
+
+        return (end_time - start_time) * 1000
 
     async def send(self, **data):
 

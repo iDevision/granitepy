@@ -18,7 +18,7 @@ class Track:
         return self.title
 
     def __repr__(self):
-        return "<Track length={0.length} is_stream={0.is_stream}>".format(self)
+        return f"<Track title={self.title} uri={self.uri} length={self.length}>"
 
 
 class Playlist:
@@ -27,16 +27,16 @@ class Playlist:
 
         self.data = data
 
-        self.name = data["playlistInfo"]["name"]
+        self.title = data["playlistInfo"]["name"]
         self.selected_track = data["playlistInfo"]["selectedTrack"]
 
         self.tracks = [Track(track=track['track'], data=track['info']) for track in data['tracks']]
 
     def __str__(self):
-        return self.name
+        return self.title
 
     def __repr__(self):
-        return f"<Playlist name={self.name} tracks={len(self.tracks)}>"
+        return f"<Playlist name={self.title} track_count={len(self.tracks)}>"
 
 
 class Metadata:
