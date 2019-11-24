@@ -20,10 +20,10 @@ pip install -U git+https://github.com/MyNameBeMrRandom/granitepy
 ```python
 from discord.ext import commands
 
-import andesite
+import granitepy
 
 bot = commands.Bot(command_prefix = "!")
-bot.andesite = andesite.Client(bot)
+bot.andesite = granitepy.Client(bot)
 
 @bot.event
 async def on_ready():
