@@ -6,6 +6,16 @@ granitepy is a library for the [Lavalink](https://github.com/Frederikam/Lavalink
 * [Discord supprt server](https://discord.gg/8a2a486)
 * Documentation (Coming soon)
 
+# Installation
+From Pypi
+```shell script
+pip install -U granitepy
+```
+From Github
+```shell script
+pip install -U git+https://github.com/MyNameBeMrRandom/granitepy
+```
+
 # Example
 ```python
 from discord.ext import commands
