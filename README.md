@@ -4,7 +4,7 @@ granitepy is a library for the [Lavalink](https://github.com/Frederikam/Lavalink
 
 ## Links
 * [Discord supprt server](https://discord.gg/8a2a486)
-* [Documentation (Coming soon)](Coming soon)
+* Documentation (Coming soon)
 
 # Example
 ```python
