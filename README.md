@@ -18,7 +18,7 @@ bot.andesite = andesite.Client(bot)
 @bot.event
 async def on_ready():
     await bot.andesite.create_node(
-            ip="127.0.0.1",
+            host="127.0.0.1",
             port=5000,
             rest_uri = "http://127.0.0.1:5000/",
             password = "Some-random-password",
