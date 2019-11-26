@@ -1,5 +1,5 @@
 """
-Made by twitch#7443
+Made by twitch#7443 and MrRandom#9258
 """
 __version__ = "0.0.20a"
 
