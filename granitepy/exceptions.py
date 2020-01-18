@@ -1,22 +1,31 @@
 class GraniteException(Exception):
-    """Base of all exceptions."""
+    pass
 
 
 class NodeConnectionFailure(GraniteException):
-    """There was an error while connecting to the websocket of a node."""
+    pass
 
 
 class NodeConnectionClosed(GraniteException):
-    """The connection to the nodes websocket is closed."""
+    pass
 
 
-class NodeInvalidCredentials(GraniteException):
-    """Invalid credentials were passed."""
+class NodeNotAvailable(GraniteException):
+    pass
 
 
-class NodesUnavailable(GraniteException):
-    """Either no nodes are currently active or all current nodes are not available."""
+class NoNodesAvailable(GraniteException):
+
+    pass
 
 
 class TrackLoadError(GraniteException):
-    """There was an error while loading tracks."""
+    pass
+
+
+class GuildNotFound(GraniteException):
+    pass
+
+
+class PlayerAlreadyExists(GraniteException):
+    pass

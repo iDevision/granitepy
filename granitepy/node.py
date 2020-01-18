@@ -1,4 +1,5 @@
 import json
+import socket
 import time
 
 import websockets
@@ -10,20 +11,20 @@ from . import objects
 
 class Node:
 
-    def __init__(self, client, bot, host: str, port: int, password: str, rest_uri: str, identifier: str, shard_id=None):
+    def __init__(self, **kwargs):
 
-        self.client = client
-        self.bot = bot
+        self.client = kwargs.pop("client")
+        self.bot = kwargs.pop("bot")
+        self.host = kwargs.pop("host")
+        self.port = kwargs.pop("port")
+        self.password = kwargs.pop("password")
+        self.identifier = kwargs.pop("identifier")
 
-        self.host = host
-        self.port = port
-        self.password = password
-        self.rest_uri = rest_uri
-        self.identifier = identifier
-        self.shard_id = shard_id
+        self.websocket_uri = f"ws://{self.host}:{self.port}/websocket"
+        self.rest_uri = f"http://{self.host}:{self.port}/"
 
-        self.available = False
         self.websocket = None
+        self.available = False
         self.task = None
 
         self.connection_id = None
@@ -39,71 +40,75 @@ class Node:
         self.players = {}
 
     def __repr__(self):
-        return f"<GraniteNode player_count={len(self.players.keys())} available={self.available}>"
-
-    def __str__(self):
-        return f"{self.identifier}"
+        return f"<GranitepyNode player_count={len(self.players.keys())} available={self.available}>"
 
     async def connect(self):
 
         await self.bot.wait_until_ready()
 
         try:
-            self.websocket = await websockets.connect(uri=f"ws://{self.host}:{self.port}/websocket", extra_headers=self.headers)
-            self.available = True
-        except websockets.InvalidHandshake:
-            raise exceptions.NodeConnectionFailure(f"The password for node '{self.identifier}' was invalid.")
-        except websockets.InvalidURI:
-            raise exceptions.NodeConnectionFailure(f"The URI provided for node '{self.identifier}' was invalid.")
+            self.websocket = await websockets.connect(uri=self.websocket_uri, extra_headers=self.headers)
 
-        if not self.task:
+            self.client.nodes[self.identifier] = self
             self.task = self.bot.loop.create_task(self.listen())
+            self.available = True
+
+        except websockets.InvalidHandshake:
+            raise exceptions.NodeConnectionFailure(f"The password for node '{self.identifier}' is invalid.")
+        except websockets.InvalidURI:
+            raise exceptions.NodeConnectionFailure(f"The URI for node '{self.identifier}' is invalid.")
+        except socket.gaierror:
+            raise exceptions.NodeConnectionFailure(f"The node '{self.identifier}' failed to connect.")
 
     async def disconnect(self):
 
-        if self.available is False:
-            return
+        for player in self.players.copy().values():
+            await player.destroy()
 
-        self.available = False
         await self.websocket.close()
+        del self.client.nodes[self.identifier]
+        self.available = False
+        self.task.cancel()
 
     async def listen(self):
 
         while self.available is True:
+
             try:
                 data = await self.websocket.recv()
-            except websockets.ConnectionClosed as e:
-                if e.code == 4001:
-                    self.available = False
-                    raise exceptions.NodeInvalidCredentials(f"Invalid credentials were passed to node '{self.identifier}'")
-                elif e.code == 1006:
-                    self.available = False
-                    raise exceptions.NodeConnectionClosed(f"Connection to node '{self.identifier}' was abnormally closed, this node is unavailable")
-                break
 
-            if data:
-                data = json.loads(data)
-                op = data.get("op", None)
-                if op == "connection-id":
-                    self.connection_id = data.get("id")
-                elif op == "metadata":
-                    self.metadata = objects.Metadata(data["data"])
-                elif op == "stats":
-                    self.stats = data["stats"]
-                elif op == "player-update":
-                    player = self.players.get(int(data["guildId"]))
-                    if not player:
-                        continue
+            except websockets.ConnectionClosed:
+                await self.disconnect()
+                raise exceptions.NodeConnectionClosed(f"The connection to node '{self.identifier}' was closed.")
+
+            if not data:
+                return
+
+            data = json.loads(data)
+
+            op_code = data.get("op")
+            if op_code == "pong":
+                self.bot.dispatch(f"node_ping", time.time())
+            elif op_code == "metadata":
+                self.metadata = objects.Metadata(data["data"])
+            elif op_code == "stats":
+                self.stats = data["stats"]
+            elif op_code == "connection-id":
+                self.connection_id = data["id"]
+            elif op_code == "event":
+                await self.dispatch_event(data)
+            elif op_code == "player-update":
+                try:
+                    player = self.players[int(data["guildId"])]
                     await player.update_state(data["state"])
-                elif op == "event":
-                    await self.dispatch_event(data)
-                elif op == "pong":
-                    self.bot.dispatch("node_ping", time.time())
+                except KeyError:
+                    continue
 
-    async def dispatch_event(self, data):
+    async def dispatch_event(self, data: dict):
 
-        player = self.players.get(int(data["guildId"]))
-        if not player:
+        try:
+            player = self.players[int(data["guildId"])]
+        except KeyError:
             return
 
         event = getattr(events, data["type"], None)
@@ -112,16 +117,16 @@ class Node:
         self.bot.dispatch(f"andesite_{event.name}", event)
 
     async def ping(self):
+
         start_time = time.time()
         await self.send(op="ping")
-
-        end_time = await self.bot.wait_for("node_ping")
+        end_time = await self.bot.wait_for(f"node_ping")
 
         return (end_time - start_time) * 1000
 
     async def send(self, **data):
 
-        try:
-            await self.websocket.send(json.dumps(data))
-        except websockets.ConnectionClosed:
-            raise exceptions.NodeConnectionClosed(f"The connection to the websocket of node '{self.identifier}' is closed.")
+        if not self.available:
+            raise exceptions.NodeNotAvailable(f"The node '{self.identifier}' is not currently available.")
+
+        await self.websocket.send(json.dumps(data))
