@@ -13,7 +13,7 @@ pip install -U granitepy
 ```
 From Github
 ```shell script
-pip install -U git+https://github.com/MyNameBeMrRandom/granitepy
+pip install -U git+https://github.com/iDivision/granitepy
 ```
 
 # Example
@@ -28,11 +28,10 @@ bot.andesite = granitepy.Client(bot)
 @bot.event
 async def on_ready():
     await bot.andesite.create_node(
-            host="127.0.0.1",
-            port=5000,
-            rest_uri = "http://127.0.0.1:5000/",
-            password = "Some-random-password",
-            identifier = "hello-there"
+        host="node-ip",
+        port=12345,
+        password="node-password",
+        identifier="node-name",
     )
 
 @bot.command()
