@@ -29,7 +29,6 @@ class Node:
 
         self.connection_id = None
         self.metadata = None
-        self.stats = None
 
         self.headers = {
             "Authorization": self.password,
@@ -88,11 +87,11 @@ class Node:
 
             op_code = data.get("op")
             if op_code == "pong":
-                self.bot.dispatch(f"node_ping", time.time())
+                self.bot.dispatch("node_ping", time.time())
+            elif op_code == "stats":
+                self.bot.dispatch("node_stats", data["stats"])
             elif op_code == "metadata":
                 self.metadata = objects.Metadata(data["data"])
-            elif op_code == "stats":
-                self.stats = data["stats"]
             elif op_code == "connection-id":
                 self.connection_id = data["id"]
             elif op_code == "event":
@@ -116,17 +115,50 @@ class Node:
 
         self.bot.dispatch(f"andesite_{event.name}", event)
 
-    async def ping(self):
-
-        start_time = time.time()
-        await self.send(op="ping")
-        end_time = await self.bot.wait_for(f"node_ping")
-
-        return (end_time - start_time) * 1000
-
     async def send(self, **data):
 
         if not self.available:
             raise exceptions.NodeNotAvailable(f"The node '{self.identifier}' is not currently available.")
 
         await self.websocket.send(json.dumps(data))
+
+    async def get_tracks(self, query: str):
+
+        async with self.client.session.get(url=f"{self.rest_uri}/loadtracks",
+                                           params=dict(identifier=query),
+                                           headers={"Authorization": self.password}) as response:
+            data = await response.json()
+
+        if data["loadType"] == "LOAD_FAILED":
+            raise exceptions.TrackLoadError(f"There was an error of severity '{data['severity']}' while loading tracks.\n\n{data['cause']}")
+
+        elif data["loadType"] == "NO_MATCHES":
+            return None
+
+        elif data["loadType"] == "TRACK_LOADED":
+            return objects.Track(track_id=data["tracks"][0]["track"], info=data["tracks"][0]["info"])
+
+        elif data["loadType"] == "SEARCH_RESULT":
+            return [objects.Track(track_id=track["track"], info=track["info"]) for track in data["tracks"]]
+
+        elif data["loadType"] == "PLAYLIST_LOADED":
+            return objects.Playlist(playlist_info=data["playlistInfo"], tracks=data["tracks"])
+
+    @property
+    async def ping(self):
+
+        start_time = time.time()
+        await self.send(op="ping")
+        end_time = await self.bot.wait_for("node_ping")
+
+        return (end_time - start_time) * 1000
+
+    @property
+    async def stats(self):
+
+        await self.send(op="get-stats")
+        node_stats = await self.bot.wait_for("node_stats")
+
+        return node_stats
+
+

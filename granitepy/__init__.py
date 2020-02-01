@@ -8,5 +8,6 @@ from .client import Client
 from .events import *
 from .exceptions import *
 from .filters import *
+from .node import Node
 from .objects import *
 from .player import Player

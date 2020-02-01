@@ -29,3 +29,7 @@ class GuildNotFound(GraniteException):
 
 class PlayerAlreadyExists(GraniteException):
     pass
+
+
+class InvalidTrackPosition(GraniteException):
+    pass
