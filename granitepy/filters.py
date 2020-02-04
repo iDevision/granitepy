@@ -23,7 +23,7 @@ class Karaoke(Filter):
                                     "filterWidth": self.filter_width}}
 
     def __repr__(self):
-        return f"GraniteFilterKaraoke level={self.level} monoLevel={self.mono_level} filterBand={self.filter_band} filterWidth={self.filter_width}"
+        return f"<GraniteFilterKaraoke level={self.level} mono_level={self.mono_level} filter_band={self.filter_band} filter_width={self.filter_width}>"
 
 
 class Timescale(Filter):
@@ -47,7 +47,7 @@ class Timescale(Filter):
                                       "rate": self.rate}}
 
     def __repr__(self):
-        return f"GraniteFilterTimescale speed={self.speed} pitch={self.pitch} rate={self.rate}"
+        return f"<GraniteFilterTimescale speed={self.speed} pitch={self.pitch} rate={self.rate}>"
 
 
 class Tremolo(Filter):
@@ -67,7 +67,7 @@ class Tremolo(Filter):
                                     "depth": self.depth}}
 
     def __repr__(self):
-        return f"GraniteFilterTremolo frequency={self.frequency} depth={self.depth}"
+        return f"<GraniteFilterTremolo frequency={self.frequency} depth={self.depth}>"
 
 
 class Vibrato(Filter):
@@ -87,4 +87,4 @@ class Vibrato(Filter):
                                     "depth": self.depth}}
 
     def __repr__(self):
-        return f"GraniteFilterVibrato frequency={self.frequency} depth={self.depth}"
+        return f"<GraniteFilterVibrato frequency={self.frequency} depth={self.depth}>"
