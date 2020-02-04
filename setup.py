@@ -9,7 +9,7 @@ setup(
     name="granitepy",
     packages=['granitepy'],
     version="0.1.0a",
-    description="An async library for the lavalink like audio provider called andesite",
+    description="A python client for the audio provider Andesite for use with discord.py.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="twitch#7443 and MrRandom#9258",
