@@ -129,19 +129,24 @@ class Node:
                                            headers={"Authorization": self.password}) as response:
             data = await response.json()
 
-        if data["loadType"] == "LOAD_FAILED":
+        load_type = data.get("loadType")
+
+        if not load_type:
+            raise exceptions.TrackLoadError("There was an error while trying to load this track.")
+
+        elif load_type == "LOAD_FAILED":
             raise exceptions.TrackLoadError(f"There was an error of severity '{data['severity']}' while loading tracks.\n\n{data['cause']}")
 
-        elif data["loadType"] == "NO_MATCHES":
+        elif load_type == "NO_MATCHES":
             return None
 
-        elif data["loadType"] == "TRACK_LOADED":
+        elif load_type == "TRACK_LOADED":
             return objects.Track(track_id=data["tracks"][0]["track"], info=data["tracks"][0]["info"])
 
-        elif data["loadType"] == "SEARCH_RESULT":
+        elif load_type == "SEARCH_RESULT":
             return [objects.Track(track_id=track["track"], info=track["info"]) for track in data["tracks"]]
 
-        elif data["loadType"] == "PLAYLIST_LOADED":
+        elif load_type == "PLAYLIST_LOADED":
             return objects.Playlist(playlist_info=data["playlistInfo"], tracks=data["tracks"])
 
     @property
@@ -160,5 +165,3 @@ class Node:
         node_stats = await self.bot.wait_for("node_stats")
 
         return node_stats
-
-
