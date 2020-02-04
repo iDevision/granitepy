@@ -18,6 +18,8 @@ class Karaoke(Filter):
                                     "monoLevel": self.mono_level,
                                     "filterBand": self.filter_band,
                                     "filterWidth": self.filter_width}}
+    def __repr__(self):
+        return f"GraniteFilterKaraoke level={level} monoLevel={mono_level} filterBand={filter_band} filterWidth={filter_width}"
 
 
 class Timescale(Filter):
@@ -39,6 +41,8 @@ class Timescale(Filter):
         self.payload = {"timescale": {"speed": self.speed,
                                       "pitch": self.pitch,
                                       "rate": self.rate}}
+    def __repr__(self):
+        return f"GraniteFilterTimescale speed={speed} pitch={pitch} rate={rate}"
 
 
 class Tremolo(Filter):
