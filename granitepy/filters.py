@@ -1,13 +1,12 @@
 class Filter:
 
     def __init__(self):
-
         self.payload = None
 
 
 class Karaoke(Filter):
 
-    def __init__(self, *, level, mono_level, filter_band, filter_width):
+    def __init__(self, *, level: float, mono_level: float, filter_band: float, filter_width: float):
 
         super().__init__()
         self.level = level
@@ -23,17 +22,15 @@ class Karaoke(Filter):
 
 class Timescale(Filter):
 
-    def __init__(self, *, speed, pitch, rate):
+    def __init__(self, *, speed: float, pitch: float, rate: float):
 
         super().__init__()
-        if not speed > 0:
-            pass
-
-        if not pitch > 0:
-            pass
-
-        if not rate > 0:
-            pass
+        if speed < 0:
+            raise ValueError("Timescale speed must be more than 0.")
+        if pitch < 0:
+            raise ValueError("Timescale pitch must be more than 0.")
+        if rate < 0:
+            raise ValueError("Timescale rate must be more than 0.")
 
         self.speed = speed
         self.pitch = pitch
@@ -46,14 +43,13 @@ class Timescale(Filter):
 
 class Tremolo(Filter):
 
-    def __init__(self, *, frequency, depth):
+    def __init__(self, *, frequency: float, depth: float):
 
         super().__init__()
-        if not frequency > 0:
-            pass
-
-        if not 0 < depth <= 1:
-            pass
+        if frequency < 0:
+            raise ValueError("Tremolo depth must be more than 0.")
+        if 0 > depth >= 1:
+            raise ValueError("Tremolo depth must be between 0 and 1.")
 
         self.frequency = frequency
         self.depth = depth
@@ -64,15 +60,13 @@ class Tremolo(Filter):
 
 class Vibrato(Filter):
 
-    def __init__(self, *, frequency, depth):
+    def __init__(self, *, frequency: float, depth: float):
 
         super().__init__()
-
-        if not 0 < frequency <= 14:
-            pass
-
-        if not 0 < depth <= 1:
-            pass
+        if 0 > frequency >= 14:
+            raise ValueError("Vibrato frequency must be between 0 and 14.")
+        if 0 > depth >= 1:
+            raise ValueError("Vibrato depth must be between 0 and 1.")
 
         self.frequency = frequency
         self.depth = depth
