@@ -1,35 +1,48 @@
-class GraniteException(Exception):
+class GranitepyException(Exception):
+    """Base of all granitepy exceptions."""
     pass
 
 
-class NodeConnectionFailure(GraniteException):
+class FilterInvalidArgument(GranitepyException):
+    """An invalid argument was passed to a filter."""
     pass
 
 
-class NodeConnectionClosed(GraniteException):
+class NodeConnectionFailure(GranitepyException):
+    """There was a problem while connecting to the node."""
     pass
 
 
-class NodeNotAvailable(GraniteException):
+class NodeConnectionClosed(GranitepyException):
+    """This node was closed."""
     pass
 
 
-class NoNodesAvailable(GraniteException):
-
+class NodeNotAvailable(GranitepyException):
+    """This node is not currently available"""
     pass
 
 
-class TrackLoadError(GraniteException):
+class NoNodesAvailable(GranitepyException):
+    """There are no nodes currently available"""
     pass
 
 
-class GuildNotFound(GraniteException):
+class GuildNotFound(GranitepyException):
+    """The guild passed to a player was not found."""
     pass
 
 
-class PlayerAlreadyExists(GraniteException):
+class PlayerAlreadyExists(GranitepyException):
+    """A player for this guild already exists."""
     pass
 
 
-class InvalidTrackPosition(GraniteException):
+class TrackInvalidPosition(GranitepyException):
+    """An invalid position was chosen for a track."""
+    pass
+
+
+class TrackLoadError(GranitepyException):
+    """There was an error while loading a track."""
     pass
