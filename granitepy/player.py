@@ -1,9 +1,11 @@
-import typing
 import time
+import typing
 
 import discord
 
-from . import objects, filters, exceptions
+from . import objects
+from . import filters
+from . import exceptions
 from .node import Node
 
 
@@ -125,7 +127,7 @@ class Player:
     async def seek(self, position: int):
 
         if position < 0 or position > self.current.length:
-            raise exceptions.InvalidTrackPosition("Position cannot be smaller than 0 or larger than the track's length")
+            raise exceptions.TrackInvalidPosition(f"Seek position must be between 0 and the track length")
 
         await self.node.send(op="seek",
                              guildId=str(self.guild.id),
