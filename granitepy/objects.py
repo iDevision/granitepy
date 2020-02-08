@@ -27,12 +27,12 @@ class Playlist:
     def __init__(self, playlist_info: dict, tracks: list):
 
         self.playlist_info = playlist_info
-        self.tracks = tracks
+        self.tracks_raw = tracks
 
         self.name = playlist_info.get("name")
         self.selected_track = playlist_info.get("selectedTrack")
 
-        self.tracks = [Track(track_id=track['track'], info=track['info']) for track in self.tracks]
+        self.tracks = [Track(track_id=track["track"], info=track["info"]) for track in self.tracks_raw]
 
     def __str__(self):
         return self.name
@@ -61,4 +61,3 @@ class Metadata:
 
     def __repr__(self):
         return f"<GraniteMetadata version={self.version!r} region={self.node_region!r} id={self.node_id} enabled_sources={self.enabled_sources}>"
-
