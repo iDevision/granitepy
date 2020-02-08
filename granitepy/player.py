@@ -50,7 +50,7 @@ class Player:
 
     @property
     def is_paused(self):
-        return self.is_connected and self.paused is not None
+        return self.is_connected and self.paused is True
 
     async def update_state(self, state: dict):
 
@@ -137,12 +137,7 @@ class Player:
 
     async def set_pause(self, pause: bool):
 
-        if self.is_paused:
-            return
-
-        await self.node.send(op="pause",
-                             guildId=str(self.guild.id),
-                             pause=pause)
+        await self.node.send(op="pause", guildId=str(self.guild.id), pause=pause)
 
         self.paused = pause
         return self.is_paused
