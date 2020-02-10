@@ -93,6 +93,12 @@ class Player:
         ws = self.bot._connection._get_websocket(self.guild.id)
         await ws.voice_state(self.guild.id, str(voice_channel.id))
 
+    async def stop(self):
+
+        self.current = None
+
+        await self.node.send(op="stop", guildId=str(self.guild.id))
+
     async def disconnect(self):
 
         await self.stop()
@@ -107,12 +113,6 @@ class Player:
 
         await self.disconnect()
         await self.node.send(op="destroy", guildId=str(self.guild.id))
-
-    async def stop(self):
-
-        self.current = None
-
-        await self.node.send(op="stop", guildId=str(self.guild.id))
 
     async def play(self, track: objects.Track, start_position: int = 0):
 
