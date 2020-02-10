@@ -83,9 +83,6 @@ class Player:
         if {"sessionId", "event"} == self.voice_state.keys():
             await self.node.send(op="voice-server-update", guildId=str(self.guild.id), **self.voice_state)
 
-    async def get_tracks(self, query: str):
-        return await self.node.get_tracks(query)
-
     async def connect(self, voice_channel: discord.VoiceChannel):
 
         self.voice_channel = voice_channel
