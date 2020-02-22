@@ -87,9 +87,9 @@ class Node:
 
             op_code = data.get("op")
             if op_code == "pong":
-                self.bot.dispatch(f"{self.identifier}_node_ping", time.time())
+                self.bot.dispatch("node_ping", time.time())
             elif op_code == "stats":
-                self.bot.dispatch(f"{self.identifier}_node_stats", data["stats"])
+                self.bot.dispatch(f"node_stats", data["stats"])
             elif op_code == "metadata":
                 self.metadata = objects.Metadata(data["data"])
             elif op_code == "connection-id":
@@ -154,7 +154,7 @@ class Node:
 
         start_time = time.time()
         await self.send(op="ping")
-        end_time = await self.bot.wait_for(f"{self.identifier}_node_ping")
+        end_time = await self.bot.wait_for(f"node_ping")
 
         return (end_time - start_time) * 1000
 
@@ -162,6 +162,6 @@ class Node:
     async def stats(self):
 
         await self.send(op="get-stats")
-        node_stats = await self.bot.wait_for(f"{self.identifier}_node_stats")
+        node_stats = await self.bot.wait_for(f"node_stats")
 
         return node_stats
