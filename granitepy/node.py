@@ -146,7 +146,6 @@ class Node:
         elif load_type == "SEARCH_RESULT" or load_type == "TRACK_LOADED":
             return [objects.Track(track_id=track["track"], info=track["info"]) for track in data["tracks"]]
 
-
     @property
     async def ping(self):
 
