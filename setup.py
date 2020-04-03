@@ -10,7 +10,7 @@ with open("README.md") as f:
 
 setuptools.setup(
     name="granitepy",
-    version="0.1.0a",
+    version="0.2.0a",
     author="MrRandom#9258 and twitch 🔋#7443",
     url="https://github.com/iDevision/granitepy",
     licence="AGPL-3.0",
