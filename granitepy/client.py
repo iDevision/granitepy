@@ -22,7 +22,7 @@ class Client:
         self.nodes = {}
 
     def __repr__(self):
-        return f"<GranitepyClient node_count={len(self.nodes.values())} player_count={len(self.players.values())}>"
+        return f"<GraniteClient node_count={len(self.nodes.values())} player_count={len(self.players.values())}>"
 
     @property
     def players(self):

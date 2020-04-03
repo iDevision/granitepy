@@ -39,7 +39,7 @@ class Node:
         self.players = {}
 
     def __repr__(self):
-        return f"<GranitepyNode player_count={len(self.players.keys())} available={self.available}>"
+        return f"<GraniteNode player_count={len(self.players.keys())} available={self.available}>"
 
     async def connect(self):
 
