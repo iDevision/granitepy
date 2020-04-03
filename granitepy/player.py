@@ -31,6 +31,9 @@ class Player:
 
         self.current = None
 
+    def __repr__(self):
+        return f"<GranitePlayer is_connected={self.is_connected} is_playing={self.is_playing}>"
+
     @property
     def position(self):
 
@@ -84,7 +87,7 @@ class Player:
             await self.node.send(op="voice-server-update", guildId=str(self.guild.id), **self.voice_state)
 
     async def get_tracks(self, query: str):
-        
+
         return await self.node.get_tracks(query)
 
     async def connect(self, voice_channel: discord.VoiceChannel):
