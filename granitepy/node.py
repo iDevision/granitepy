@@ -4,7 +4,9 @@ import time
 
 import websockets
 
-from . import events, exceptions, objects
+from . import events
+from . import exceptions
+from . import objects
 
 
 class Node:

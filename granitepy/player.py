@@ -3,7 +3,9 @@ import typing
 
 import discord
 
-from . import objects, filter, exceptions
+from . import objects
+from . import filters
+from . import exceptions
 from .node import Node
 
 
