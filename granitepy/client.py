@@ -64,8 +64,7 @@ class Client:
 
     async def create_node(self, host: str, port: int, password: str, identifier: str):
 
-        node = Node(client=self, bot=self.bot,
-                    host=host, port=port,
+        node = Node(client=self, bot=self.bot, host=host, port=port,
                     password=password, identifier=identifier)
         await node.connect()
 

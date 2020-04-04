@@ -7,3 +7,6 @@
 venv/
 .idea/
 .git/
+build/
+dist/
+granitepy.egg-info/
