@@ -19,7 +19,7 @@ class Track:
         return self.title
 
     def __repr__(self):
-        return f"<GraniteTrack title={self.title!r} uri={self.uri!r} length={self.length}>"
+        return f"<GraniteTrack title={self.title!r} uri=<{self.uri!r}> length={self.length}>"
 
 
 class Playlist:
