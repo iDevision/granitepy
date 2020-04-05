@@ -3,7 +3,7 @@ import random
 import typing
 
 import aiohttp
-import discord
+from discord.ext import commands
 
 from . import exceptions
 from .node import Node
@@ -77,25 +77,25 @@ class Client:
 
         return random.choice([node for node in self.nodes.values()])
 
-    def create_player(self, guild: discord.Guild, cls: typing.Type[Player]):
+    def create_player(self, ctx: commands.Context, cls: typing.Type[Player]):
 
         if not self.nodes:
             raise exceptions.NoNodesAvailable("There are no nodes available.")
 
-        if guild.id in self.players.keys():
-            raise exceptions.PlayerAlreadyExists(f"A player for guild '{guild.id}' already exists.")
+        if ctx.guild.id in self.players.keys():
+            raise exceptions.PlayerAlreadyExists(f"A player for guild '{ctx.guild.id}' already exists.")
 
         node = self.get_node()
-        player = cls(self.bot, node, guild)
-        node.players[guild.id] = player
-        return node.players[guild.id]
+        player = cls(self.bot, node, ctx)
+        node.players[ctx.guild.id] = player
+        return node.players[ctx.guild.id]
 
-    def get_player(self, guild: discord.Guild, cls: typing.Type[Player] = Player):
+    def get_player(self, ctx: commands.Context, cls: typing.Type[Player] = Player):
 
         if not self.nodes:
             raise exceptions.NoNodesAvailable("There are no nodes available.")
 
-        if guild.id not in self.players.keys():
-            self.create_player(guild, cls)
+        if ctx.guild.id not in self.players.keys():
+            self.create_player(ctx, cls)
 
         return self.players[guild.id]

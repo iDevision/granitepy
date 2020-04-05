@@ -2,20 +2,22 @@ import time
 import typing
 
 import discord
+from discord.ext import commands
 
-from . import objects
-from . import filters
 from . import exceptions
+from . import filters
+from . import objects
 from .node import Node
 
 
 class Player:
 
-    def __init__(self, bot, node: Node, guild: discord.Guild):
+    def __init__(self, bot, node: Node, ctx: commands.Context):
 
         self.bot = bot
         self.node = node
-        self.guild = guild
+        self.ctx = ctx
+        self.guild = ctx.guild
         self.voice_channel = None
         self.text_channel = None
 
