@@ -11,7 +11,7 @@ from .node import Node
 
 class Player:
 
-    def __init__(self, bot, node: Node, guild: discord.Guild):
+    def __init__(self, bot, node: Node, guild: discord.Guild, **kwargs):
 
         self.bot = bot
         self.node = node
