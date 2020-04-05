@@ -98,4 +98,4 @@ class Client:
         if ctx.guild.id not in self.players.keys():
             self.create_player(ctx, cls)
 
-        return self.players[guild.id]
+        return self.players[ctx.guild.id]
