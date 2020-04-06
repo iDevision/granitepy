@@ -1,10 +1,10 @@
 # granitepy
-granitepy is a library for the [Lavalink](https://github.com/Frederikam/Lavalink) like audio provider called 
+granitepy is a python wrapper for the [Lavalink](https://github.com/Frederikam/Lavalink) like audio provider called 
 [Andesite](https://github.com/natanbc/andesite-node) for use with [discord.py](https://github.com/Rapptz/discord.py).
 
 ## Links
 * [Discord supprt server](https://discord.gg/8a2a486)
-* Documentation (Coming soon)
+* [Documentation](https://granitepy.readthedocs.io/en/latest/granitepy.html)
 
 # Installation
 From Pypi
