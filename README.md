@@ -13,7 +13,7 @@ pip install -U granitepy
 ```
 From Github
 ```shell script
-pip install -U git+https://github.com/iDivision/granitepy
+pip install -U git+https://github.com/iDevision/granitepy
 ```
 
 # Example
