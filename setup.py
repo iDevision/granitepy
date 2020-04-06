@@ -14,7 +14,7 @@ setuptools.setup(
     version="0.3.0a0",
     url="https://github.com/iDevision/granitepy",
     packages=setuptools.find_packages(),
-    licence="AGPL-3.0",
+    licence="MIT",
     description="A python client for the audio provider Andesite for use with discord.py.",
     long_description=readme,
     long_description_content_type="text/markdown",
