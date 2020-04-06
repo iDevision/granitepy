@@ -1,8 +1,9 @@
 .. currentmodule:: granitepy
 
 Client
-===============
-Main class for managing nodes and creating/using players.
+======
+
+.. automodule:: client
 
 .. autoclass:: Client
     :members:

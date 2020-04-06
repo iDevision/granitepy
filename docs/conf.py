@@ -12,7 +12,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+
+sys.path.insert(0, os.path.abspath('../'))
 
 
 # -- Project information -----------------------------------------------------
@@ -24,11 +25,6 @@ author = 'MrRandom#9258 and twitch#7443'
 # The full version, including alpha/beta/rc tags
 release = '0.3.0a0'
 
-# The suffix of source filenames.
-source_suffix = '.rst'
-
-# The master toctree document.
-master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
@@ -37,17 +33,37 @@ master_doc = 'index'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
 
 ]
 
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = False
+autodoc_member_order = 'groupwise'
+
+
+# The suffix of source filenames.
+source_suffix = '.rst'
+
+# The master toctree document.
+master_doc = 'index'
+
+rst_prolog = """
+.. |coro| replace:: This function is a |corourl|_.
+.. |maybecoro| replace:: This function *could be a* |corourl|_.
+.. |corourl| replace:: *coroutine*
+.. _corourl: https://docs.python.org/3/library/asyncio-task.html#coroutine
+"""
+
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -55,7 +71,8 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'groundwork'
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

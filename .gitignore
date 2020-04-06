@@ -10,3 +10,4 @@ venv/
 build/
 dist/
 granitepy.egg-info/
+docs/_build/
