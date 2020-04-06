@@ -36,14 +36,17 @@ class Player:
     def __repr__(self):
         return f"<GranitePlayer is_connected={self.is_connected} is_playing={self.is_playing}>"
 
+    # From previous versions of granitepy
     @property
     def position(self):
-
-        if self.current is None:
+        if not self.is_playing:
             return 0
 
+        if self.paused:
+            return min(self.last_positon, self.current.length)
+
         difference = (time.time() * 1000) - self.last_update
-        return self.last_position + difference
+        return min(self.last_position + difference, self.current.length)
 
     @property
     def is_connected(self):
