@@ -19,7 +19,7 @@
 
 project = 'granitepy'
 copyright = '2020, MrRandom#9258 twitch#7443'
-author = 'MrRandom#9258 twitch#7443'
+author = 'MrRandom#9258 and twitch#7443'
 
 # The full version, including alpha/beta/rc tags
 release = '0.3.0a0'

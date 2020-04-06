@@ -8,7 +8,6 @@ Welcome to granitepy's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    granitepy/client.rst
    granitepy/events.rst
@@ -17,9 +16,8 @@ Welcome to granitepy's documentation!
    granitepy/player.rst
 
 
-Indices and tables
+If you still can't find what you're looking for, try in one of the following pages:
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
