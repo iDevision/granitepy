@@ -9,12 +9,6 @@ Welcome to granitepy's documentation!
 .. toctree::
    :maxdepth: 2
 
-   granitepy/client.rst
-   granitepy/events.rst
-   granitepy/exceptions.rst
-   granitepy/objects.rst
-   granitepy/player.rst
-
 
 If you still can't find what you're looking for, try in one of the following pages:
 ==================
