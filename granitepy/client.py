@@ -11,6 +11,14 @@ from .player import Player
 
 
 class Client:
+    """The main client used to connect/manage nodes and their players.
+
+    Attributes
+    ----------
+    bot: :class:`commands.Bot`
+    loop: :class:`asyncio.BaseEventLoop`
+    session: :class:`asyncio.ClientSession`
+    nodes: Dict[:class:`str`, :class:`.Node`"""
 
     def __init__(self, bot, loop=None, session=None):
 
