@@ -1,9 +1,18 @@
+# Configuration file for the Sphinx documentation builder.
+#
+# This file only contains a selection of the most common options. For a full
+# list see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
+
 # -- Path setup --------------------------------------------------------------
 
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('../'))
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -28,15 +37,24 @@ extensions = [
 
 ]
 
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'friendly'
+
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
+
+# List of patterns, relative to source directory, that match files and
+# directories to ignore when looking for source files.
+# This pattern also affects html_static_path and html_extra_path.
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
 # Extension settings.
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
 autodoc_member_order = 'groupwise'
 
 
-# The suffix of source filenames.
 source_suffix = '.rst'
-# The master toctree document.
 master_doc = 'index'
 
 rst_prolog = """
@@ -46,31 +64,34 @@ rst_prolog = """
 .. _corourl: https://docs.python.org/3/library/asyncio-task.html#coroutine
 """
 
-
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# Links used for cross-referencing stuff in other documentation
+intersphinx_mapping = {
+  'py': ('https://docs.python.org/3', None)
+}
 
 
 # -- Options for HTML output -------------------------------------------------
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'friendly'
-
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
-
 html_experimental_html5_writer = True
 
-html_static_path = ['_static']
+
+# The theme to use for HTML and HTML Help pages.  See the documentation for
+# a list of builtin themes.
 html_theme = 'alabaster'
-html_theme_options = {
-    "logo": "discord.png",
-    "description": ""
-}
+
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+html_logo = "images/discord.png"
+
+# The name of a javascript file (relative to the configuration directory) that
+# implements a search results scorer. If empty, the default will be used.
+html_search_scorer = '_static/scorer.js'
+
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ['_static']
 
 
+def setup(app):
+  app.add_javascript('custom.js')
