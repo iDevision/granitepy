@@ -4,7 +4,7 @@ granitepy is a python wrapper for the [Lavalink](https://github.com/Frederikam/L
 
 ## Links
 * [Discord support server](https://discord.gg/xP8xsHr)
-* [Documentation](https://granitepy.readthedocs.io/en/latest/granitepy.html)
+* [Documentation](https://granitepy.readthedocs.io/en/latest/index.html)
 
 # Installation
 From Pypi
