@@ -4,10 +4,9 @@ __version__ = "0.3.0a0"
 __title__ = "granitepy"
 __author__ = "MrRandom#9258 and twitch 🔋#7443"
 
-
 from .client import Client
-from .player import Player
 from .node import Node
+from .player import Player
 from .exceptions import *
 from .events import *
 from .filters import *

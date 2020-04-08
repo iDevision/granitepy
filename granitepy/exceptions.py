@@ -5,11 +5,6 @@ class GranitepyException(Exception):
     pass
 
 
-class FilterInvalidArgument(GranitepyException):
-    """An invalid argument was passed to a filter."""
-    pass
-
-
 class NodeConnectionFailure(GranitepyException):
     """There was a problem while connecting to the node."""
     pass
@@ -25,18 +20,13 @@ class NodeNotAvailable(GranitepyException):
     pass
 
 
-class NoNodesAvailable(GranitepyException):
+class NodesNotAvailable(GranitepyException):
     """There are no nodes currently available"""
     pass
 
 
 class GuildNotFound(GranitepyException):
     """The guild passed to a player was not found."""
-    pass
-
-
-class PlayerAlreadyExists(GranitepyException):
-    """A player for this guild already exists."""
     pass
 
 
@@ -48,3 +38,9 @@ class TrackInvalidPosition(GranitepyException):
 class TrackLoadError(GranitepyException):
     """There was an error while loading a track."""
     pass
+
+
+class FilterInvalidArgument(GranitepyException):
+    """An invalid argument was passed to a filter."""
+    pass
+

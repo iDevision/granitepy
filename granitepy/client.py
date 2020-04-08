@@ -3,6 +3,7 @@ import random
 import typing
 
 import aiohttp
+import discord
 from discord.ext import commands
 
 from . import exceptions
@@ -11,38 +12,35 @@ from .player import Player
 
 
 class Client:
-    r"""The main client used to manage nodes and their players.
+    """The main client used to manage :class:`.Node`'s and their :class:`.Player`'s.
 
     Attributes
     ----------
-    bot: :class:`commands.Bot`
-    loop: :class:`asyncio.BaseEventLoop`
-    session: :class:`asyncio.ClientSession`
-    nodes: Dict[:class:`str`: :class:`.Node`]
+    bot: Union[:class:`discord.ext.commands.Bot`, :class:`discord.ext.commands.AutoShardedBot`]
+        The bot instance for granitepy to use.
+    loop: Optional[Union[:class:`asyncio.AbstractEventLoop`, :class:`asyncio.ProactorEventLoop`]]
+        The event loop to use. If none it will default to the currently running loop.
+    session: Optional[:class:`aiohttp.ClientSession`]
+        The aiohttp session to use. If none it will create one using the current loop.
+    nodes: :class:`dict` [:class:`str`, :class:`.Node`]
+        A mapping of :class:`.Node` identifiers to :class:`.Node` instances.
+
     """
 
-    def __init__(self, bot, loop=None, session=None):
+    def __init__(self, bot: typing.Union[commands.Bot, commands.AutoShardedBot], loop=None, session=None):
 
         self.bot = bot
-        self.loop = loop or asyncio.get_event_loop()
-        self.session = session or aiohttp.ClientSession(loop=self.loop)
-        self.bot.add_listener(self.update_handler, "on_socket_response")
+        self.loop = loop if loop else asyncio.get_event_loop()
+        self.session = session if session else aiohttp.ClientSession(loop=self.loop)
 
         self.nodes = {}
+
+        self.bot.add_listener(self._update_handler, "on_socket_response")
 
     def __repr__(self):
         return f"<GraniteClient node_count={len(self.nodes.values())} player_count={len(self.players.values())}>"
 
-    @property
-    def players(self):
-
-        players = []
-        for node in self.nodes.values():
-            players.extend(node.players.values())
-
-        return {player.guild.id: player for player in players}
-
-    async def update_handler(self, data: dict):
+    async def _update_handler(self, data: dict):
 
         if not data:
             return
@@ -72,39 +70,100 @@ class Client:
             return
 
     async def create_node(self, host: str, port: int, password: str, identifier: str):
+        """|coro|
 
-        node = Node(client=self, bot=self.bot, host=host, port=port,
+        Creates and returns a :class:`.Node`.
+
+        Parameters
+        ----------
+        host: :class:`str`
+            The ip that the andesite node is being hosted on.
+        port: :class:`int`
+            The port that the andesite node is being hosted on.
+        password: :class:`str`
+            The password used to authenticate connection to the andesite node.
+        identifier: :class:`str`
+            A custom identifier for this :class:`.Node`. This can not be the same as an already existing :class:`.Node`'s identifier.
+
+        Raises
+        ------
+        :exc:`.NodeConnectionFailure`
+            If there was an error while creating the :class:`.Node`.
+
+        Returns
+        -------
+        :class:`.Node`
+            The newly created :class:`.Node` object.
+        """
+
+        node = Node(client=self, host=host, port=port,
                     password=password, identifier=identifier)
-        await node.connect()
-
-        return node
+        return await node.connect()
 
     def get_node(self):
+        """
+        Returns a :class:`.Node`.
+
+        Raises
+        ------
+        :exc:`.NodesNotAvailable`
+            If there are no :class:`.Node`'s available.
+
+        Returns
+        -------
+        :class:`.Node`
+            A :class:`.Node` object.
+        """
 
         if not self.nodes:
-            raise exceptions.NoNodesAvailable("There are no nodes available.")
+            raise exceptions.NodesNotAvailable("There are no nodes available.")
 
+        # TODO better method of getting nodes.
         return random.choice([node for node in self.nodes.values()])
 
-    def create_player(self, ctx: commands.Context, cls: typing.Type[Player]):
+    @property
+    def players(self):
+        """:class:`dict` [:class:`int`, :class:`.Player`]: A mapping of :class:`discord.Guild` ids to :class:`.Player` instances for all :class:`.Node`'s."""
+
+        players = []
+        for node in self.nodes.values():
+            players.extend(node.players.values())
+
+        return {player.guild.id: player for player in players}
+
+    def get_player(self, guild: discord.Guild, cls: typing.Type[Player] = None):
+        """
+        Tries to return the :class:`.Player` for the current :class:`discord.Guild`, If one doesnt exist it will be created.
+
+        Parameters
+        ----------
+        guild: :class:`discord.Guild`
+            The :class:`discord.Guild` of which to get/create the :class:`.Player`.
+        cls: Optional[:class:`.Player`]
+            An optional subclass of :class:`.Player`.
+
+        Raises
+        ------
+        :exc:`.NodesNotAvailable`
+            If there are no :class:`.Node`'s available.
+
+        Returns
+        -------
+        :class:`.Player`
+            The current guilds :class:`.Player`.
+        """
 
         if not self.nodes:
-            raise exceptions.NoNodesAvailable("There are no nodes available.")
+            raise exceptions.NodesNotAvailable("There are no nodes available.")
 
-        if ctx.guild.id in self.players.keys():
-            raise exceptions.PlayerAlreadyExists(f"A player for guild '{ctx.guild.id}' already exists.")
+        if guild.id in self.players.keys():
+            return self.players[guild.id]
+
+        if not cls:
+            cls = Player
 
         node = self.get_node()
-        player = cls(self.bot, node, ctx)
-        node.players[ctx.guild.id] = player
-        return node.players[ctx.guild.id]
+        player = cls(self.bot, node, guild)
+        node.players[guild.id] = player
 
-    def get_player(self, ctx: commands.Context, cls: typing.Type[Player] = Player):
-
-        if not self.nodes:
-            raise exceptions.NoNodesAvailable("There are no nodes available.")
-
-        if ctx.guild.id not in self.players.keys():
-            self.create_player(ctx, cls)
-
-        return self.players[ctx.guild.id]
+        return self.players[guild.id]

@@ -1,6 +1,3 @@
-// borrowed from rapptz' discord.py documentation.
-
-
 var _queryBeingDone = null;
 var _pattern = null;
 var _escapedRegex = /[-\/\\^$*+?.()|[\]{}]/g;
@@ -34,7 +31,7 @@ var Scorer = {
 
     score: function(result) {
       // only inflate the score of things that are actual API reference things
-      if(_pattern !== null && result[1].startsWith('discord.')) {
+      if(_pattern !== null && result[1].startsWith('granitepy.')) {
         let _score = __score(result[1], _pattern);
         if(_score === Number.MAX_VALUE) {
             return result[4];

@@ -1,6 +1,3 @@
-// borrowed from rapptz' discord.py documentation.
-
-
 $(document).ready(function () {
   var sections = $('div.section');
   var activeLink = null;

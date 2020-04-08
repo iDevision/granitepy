@@ -12,7 +12,7 @@ from .node import Node
 
 class Player:
 
-    def __init__(self, bot, node: Node, ctx: commands.Context):
+    def __init__(self, bot, node: Node, guild: discord.Guild):
 
         self.bot = bot
         self.node = node
@@ -39,11 +39,12 @@ class Player:
     # From previous versions of granitepy
     @property
     def position(self):
+
         if not self.is_playing:
             return 0
 
         if self.paused:
-            return min(self.last_positon, self.current.length)
+            return min(self.last_position, self.current.length)
 
         difference = (time.time() * 1000) - self.last_update
         return min(self.last_position + difference, self.current.length)
