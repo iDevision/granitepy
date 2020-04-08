@@ -12,7 +12,7 @@ from .player import Player
 
 
 class Client:
-    """The main client used to manage :class:`.Node`'s and their :class:`.Player`'s.
+    """The main client used to manage nodes and their players.
 
     Attributes
     ----------
@@ -23,8 +23,7 @@ class Client:
     session: Optional[:class:`aiohttp.ClientSession`]
         The aiohttp session to use. If none it will create one using the current loop.
     nodes: :class:`dict` [:class:`str`, :class:`.Node`]
-        A mapping of :class:`.Node` identifiers to :class:`.Node` instances.
-
+        A mapping of Node identifiers to Node instances.
     """
 
     def __init__(self, bot: typing.Union[commands.Bot, commands.AutoShardedBot], loop=None, session=None):
@@ -39,6 +38,16 @@ class Client:
 
     def __repr__(self):
         return f"<GraniteClient node_count={len(self.nodes.values())} player_count={len(self.players.values())}>"
+
+    @property
+    def players(self):
+        """:class:`dict` [:class:`int`, :class:`.Player`]: A mapping of :class:`discord.Guild` ids to Player instances for all Nodes."""
+
+        players = []
+        for node in self.nodes.values():
+            players.extend(node.players.values())
+
+        return {player.guild.id: player for player in players}
 
     async def _update_handler(self, data: dict):
 
@@ -83,53 +92,47 @@ class Client:
         password: :class:`str`
             The password used to authenticate connection to the andesite node.
         identifier: :class:`str`
-            A custom identifier for this :class:`.Node`. This can not be the same as an already existing :class:`.Node`'s identifier.
+            A custom identifier for this Node. This must be unique to this Node.
 
         Raises
-        ------
+        -----
         :exc:`.NodeConnectionFailure`
-            If there was an error while creating the :class:`.Node`.
+            The Node failed to connect.
+        :exc:`.NodeCreationError`
+            A Node with the given identifier already exists.
 
         Returns
         -------
         :class:`.Node`
-            The newly created :class:`.Node` object.
+            The newly created Node object.
         """
 
-        node = Node(client=self, host=host, port=port,
-                    password=password, identifier=identifier)
+        if identifier in self.nodes.keys():
+            raise exceptions.NodeCreationError(f"A Node with identifier '{identifier}' already exists.")
+
+        node = Node(client=self, host=host, port=port, password=password, identifier=identifier)
         return await node.connect()
 
     def get_node(self):
         """
-        Returns a :class:`.Node`.
+        Finds the best :class:`.Node` and returns it.
 
         Raises
         ------
-        :exc:`.NodesNotAvailable`
-            If there are no :class:`.Node`'s available.
+        :exc:`.NoNodesAvailable`
+            There are no Nodes available.
 
         Returns
         -------
         :class:`.Node`
-            A :class:`.Node` object.
+            A Node object.
         """
 
         if not self.nodes:
-            raise exceptions.NodesNotAvailable("There are no nodes available.")
+            raise exceptions.NoNodesAvailable("There are no Nodes available.")
 
         # TODO better method of getting nodes.
         return random.choice([node for node in self.nodes.values()])
-
-    @property
-    def players(self):
-        """:class:`dict` [:class:`int`, :class:`.Player`]: A mapping of :class:`discord.Guild` ids to :class:`.Player` instances for all :class:`.Node`'s."""
-
-        players = []
-        for node in self.nodes.values():
-            players.extend(node.players.values())
-
-        return {player.guild.id: player for player in players}
 
     def get_player(self, guild: discord.Guild, cls: typing.Type[Player] = None):
         """
@@ -138,23 +141,23 @@ class Client:
         Parameters
         ----------
         guild: :class:`discord.Guild`
-            The :class:`discord.Guild` of which to get/create the :class:`.Player`.
+            The discord guild of which to get/create the Player.
         cls: Optional[:class:`.Player`]
-            An optional subclass of :class:`.Player`.
+            An optional subclass of Player.
 
         Raises
         ------
-        :exc:`.NodesNotAvailable`
-            If there are no :class:`.Node`'s available.
+        :exc:`.NoNodesAvailable`
+            There are no Nodes available.
 
         Returns
         -------
         :class:`.Player`
-            The current guilds :class:`.Player`.
+            The current guilds Player.
         """
 
         if not self.nodes:
-            raise exceptions.NodesNotAvailable("There are no nodes available.")
+            raise exceptions.NoNodesAvailable("There are no Nodes available.")
 
         if guild.id in self.players.keys():
             return self.players[guild.id]

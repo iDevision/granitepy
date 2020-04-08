@@ -1,6 +1,28 @@
 
 
 class Track:
+    """
+    A granitepy Track.
+
+    Attributes
+    ----------
+    title: :class:`str`
+        The Track's title.
+    author: :class:`str`
+        The Track's author.
+    length: :class:`int`
+        The Track's length in milliseconds.
+    identifier: :class:`str`
+        The Track's identifier.
+    uri: :class:`str`
+        The Track's url.
+    is_stream: :class:`bool`
+        Whether or not the Track is a stream.
+    is_seekable: :class:`bool`
+        Whether or not the Track is seekable.
+    position: :class:`int`
+        The Track's current position.
+    """
 
     def __init__(self, track_id: str, info: dict):
 
@@ -10,7 +32,7 @@ class Track:
         self.title = info.get("title")
         self.author = info.get("author")
         self.length = info.get("length")
-        self.yt_id = info.get("identifier")
+        self.identifier = info.get("identifier")
         self.uri = info.get("uri")
         self.is_stream = info.get("isStream")
         self.is_seekable = info.get("isSeekable")
@@ -24,6 +46,18 @@ class Track:
 
 
 class Playlist:
+    """
+    A granitepy Playlist.
+
+    Attributes
+    ----------
+    name: :class:`str`
+        The Playlist's name.
+    selected_track: Optional[:class:`int`]
+        The Track the playlist is currently on. Can be None if the playlist was linked directly.
+    tracks: :class:`list` [:class:`.Track`]
+        A list of Tracks belonging to the Playlist.
+    """
 
     def __init__(self, playlist_info: dict, tracks: list):
 
@@ -43,6 +77,32 @@ class Playlist:
 
 
 class Metadata:
+    """
+    Metadata about a andesite node.
+
+    Attributes
+    ----------
+    version: :class:`str`
+        The andesite node's full version number.
+    version_major: :class:`str`
+        The andesite node's major version.
+    version_minor: :class:`str`
+        The andesite node's minor version.
+    version_revision: :class:`str`
+        The andesite node's revision version.
+    version_commit: :class:`str`
+        The andesite nodes commit version.
+    version_build: :class:`str`
+        The andesite node's build number.
+    node_region: :class:`str`
+        The andesite node's region.
+    node_id: :class:`str`
+        The andesite node's id
+    enabled_sources: :class:`list`
+        The andesite node's enabled sources
+    loaded_plugins: :class:`list`
+        The andesite node's loaded plugins
+    """
 
     def __init__(self, metadata: dict):
 

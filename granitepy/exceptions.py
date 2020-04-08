@@ -2,31 +2,32 @@
 
 class GranitepyException(Exception):
     """Base of all granitepy exceptions."""
-    pass
 
 
-class NodeConnectionFailure(GranitepyException):
+class NodeException(Exception):
+    """Base exception for nodes."""
+
+
+class NodeCreationError(NodeException):
+    """There was a problem while creating the node."""
+
+
+class NodeConnectionFailure(NodeException):
     """There was a problem while connecting to the node."""
-    pass
 
 
-class NodeConnectionClosed(GranitepyException):
-    """This node was closed."""
+class NodeConnectionClosed(NodeException):
+    """The nodes connection is closed."""
     pass
 
 
 class NodeNotAvailable(GranitepyException):
-    """This node is not currently available"""
+    """The node is not currently available."""
     pass
 
 
-class NodesNotAvailable(GranitepyException):
-    """There are no nodes currently available"""
-    pass
-
-
-class GuildNotFound(GranitepyException):
-    """The guild passed to a player was not found."""
+class NoNodesAvailable(GranitepyException):
+    """There are no nodes currently available."""
     pass
 
 

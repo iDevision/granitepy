@@ -16,7 +16,9 @@ class Node:
     Attributes
     ----------
     client: :class:`.Client`
-        The :class:`.Client` that this :class:`.Node` is being used by.
+        The granitepy Client that this Node is being used by.
+    bot: Union[:class:`discord.ext.commands.Bot`, :class:`discord.ext.commands.AutoShardedBot`]
+        The bot instance that granitepy is using.
     host: :class:`str`
         The ip that the andesite node is being hosted on.
     port: :class:`int`
@@ -24,13 +26,13 @@ class Node:
     password: :class:`str`
         The password used to authenticate connection to the andesite node.
     identifier: :class:`str`
-        A custom identifier for this :class:`.Node`. This can not be the same as an already existing :class:`.Node`'s identifier.
+        The custom identifier for this Node.
     websocket_uri: :class:`str`
-        The uri of the websocket this :class:`.Node` will connect to.
+        The uri of the websocket this Node will connect to.
     rest_uri: :class:`str`
         The uri of the rest api used to make requests.
     players: :class:`dict` [:class:`int`, :class:`.Player`]
-        A mapping of :class:`discord.Guild` ids to :class:`.Player` instances for this :class:`.Node`.
+        A mapping of :class:`discord.Guild` ids to Player instances for this Node.
     """
 
     def __init__(self, client, host: str, port: int, password: str, identifier: str):
@@ -62,25 +64,6 @@ class Node:
 
     def __repr__(self):
         return f"<GraniteNode player_count={len(self.players.keys())} available={self.available}>"
-
-    @property
-    async def ping(self):
-        """:class:`float`: The latency between granitepy and your andesite node."""
-
-        start_time = time.time()
-        await self.send(op="ping")
-        end_time = await self.bot.wait_for(f"node_ping")
-
-        return (end_time - start_time) * 1000
-
-    @property
-    async def stats(self):
-        """:class:`float`: Stats about the andesite node."""
-
-        await self.send(op="get-stats")
-        node_stats = await self.bot.wait_for(f"node_stats")
-
-        return node_stats
 
     async def listen(self):
 
@@ -135,6 +118,25 @@ class Node:
 
         await self.websocket.send(json.dumps(data))
 
+    @property
+    async def latency(self):
+        """:class:`float`: The latency between granitepy and your andesite node."""
+
+        start_time = time.time()
+        await self.send(op="ping")
+        end_time = await self.bot.wait_for(f"node_ping")
+
+        return (end_time - start_time) * 1000
+
+    @property
+    async def stats(self):
+        """:class:`dict`: Stats about the andesite node."""
+
+        await self.send(op="get-stats")
+        node_stats = await self.bot.wait_for(f"node_stats")
+
+        return node_stats
+
     async def connect(self):
         """|coro|
 
@@ -143,31 +145,30 @@ class Node:
         Raises
         ------
         :exc:`.NodeConnectionFailure`
-            If there was a problem while the :class:`.Node` was connecting.
+            The Node failed to connect.
 
         Returns
         -------
         :class:`.Node`
-            A :class:`.Node` object.
+            A Node object.
         """
 
         await self.bot.wait_until_ready()
 
         try:
             self.websocket = await websockets.connect(uri=self.websocket_uri, extra_headers=self.headers)
-
-            self.client.nodes[self.identifier] = self
             self.task = self.bot.loop.create_task(self.listen())
+            self.client.nodes[self.identifier] = self
             self.available = True
 
             return self
 
         except websockets.InvalidHandshake:
-            raise exceptions.NodeConnectionFailure(f"The password for node '{self.identifier}' is invalid.")
+            raise exceptions.NodeConnectionFailure(f"The password for Node '{self.identifier}' is invalid.")
         except websockets.InvalidURI:
-            raise exceptions.NodeConnectionFailure(f"The URI for node '{self.identifier}' is invalid.")
+            raise exceptions.NodeConnectionFailure(f"The URI for Node '{self.identifier}' is invalid.")
         except socket.gaierror:
-            raise exceptions.NodeConnectionFailure(f"The node '{self.identifier}' failed to connect.")
+            raise exceptions.NodeConnectionFailure(f"The Node '{self.identifier}' failed to connect.")
 
     async def disconnect(self):
         """|coro|
@@ -188,21 +189,18 @@ class Node:
 
         Returns a list of tracks or a playlist.
 
-
         Parameters
         ----------
         query: :class:`str`
-            The query you want to search youtube with. Can be a link or a general search.
-
+            The search to preform. Can be a link or a general search term.
 
         Returns
         -------
         Union[:class:`list` [:class:`.Track`], :class:`.Playlist`]
-            Either a :class:`list` of :class:`.Track`'s or a :class:`.Playlist`
+            Either a list of Tracks or a Playlist.
         """
 
-        async with self.client.session.get(url=f"{self.rest_uri}/loadtracks",
-                                           params=dict(identifier=query),
+        async with self.client.session.get(url=f"{self.rest_uri}/loadtracks", params=dict(identifier=query),
                                            headers={"Authorization": self.password}) as response:
             data = await response.json()
 
