@@ -1,2 +1,3 @@
-discord.py
+discord.py>=1.3.3
 sphinxcontrib_trio
+sphinx>=3.0.0
