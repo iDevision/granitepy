@@ -11,7 +11,7 @@ with open("README.md") as f:
 setuptools.setup(
     name="granitepy",
     author="MrRandom#9258 and twitch 🔋#7443",
-    version="0.4.0",
+    version="0.4.1",
     url="https://github.com/iDevision/granitepy",
     packages=setuptools.find_packages(),
     licence="MIT",
