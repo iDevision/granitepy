@@ -14,7 +14,6 @@ import sys
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.append(os.path.abspath('_extensions'))
-sys.path.append(os.path.abspath('_images'))
 
 
 # -- Project information -----------------------------------------------------
@@ -34,12 +33,12 @@ release = '0.4.0'
 # ones.
 extensions = [
     'builder',
+    'details',
+    'exception_hierarchy',
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
-    'details',
     'sphinxcontrib_trio',
-    'exception_hierarchy'
 ]
 
 # Extension settings
@@ -48,7 +47,6 @@ autodoc_typehints = "none"
 
 # Links used for cross-referencing stuff in other documentation
 intersphinx_mapping = {
-    'typing': ('https://docs.python.org/3/', None),
     'commands': ('https://discordpy.readthedocs.io/en/latest/', None),
     'discord': ('https://discordpy.readthedocs.io/en/latest/', None),
     'aiohttp': ('https://aiohttp.readthedocs.io/en/stable/', None),
