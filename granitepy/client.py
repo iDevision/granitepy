@@ -166,7 +166,7 @@ class Client:
             cls = Player
 
         node = self.get_node()
-        player = cls(self.bot, node, guild)
+        player = cls(node, guild)
         node.players[guild.id] = player
 
         return self.players[guild.id]
