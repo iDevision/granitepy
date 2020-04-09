@@ -36,7 +36,7 @@ async def on_ready():
 @bot.command()
 async def connect(ctx):
     # Create or fetch a player.
-    player = bot.granitepy.get_player(ctx=ctx)
+    player = bot.granitepy.get_player(guild=ctx.guild)
 
     # Check is the author is in a voice channel.
     if not ctx.author.voice:
@@ -48,7 +48,7 @@ async def connect(ctx):
 
 @bot.command()
 async def play(ctx, *, search):
-    player = bot.granitepy.get_player(ctx=ctx)
+    player = bot.granitepy.get_player(guild=ctx.guild)
 
     # Search for whatever the user has inputted.
     result = await player.get_tracks(search)
@@ -63,7 +63,7 @@ async def play(ctx, *, search):
         return await player.play(result.tracks[0])
     else:
         # Play the first track in the list of results.
-        return await player.play(results[0])
+        return await player.play(result[0])
 
 bot.run("token")
 ```
