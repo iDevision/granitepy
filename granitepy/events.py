@@ -2,6 +2,9 @@
 
 class GranitepyEvent:
 
+    def __init__(self):
+        pass
+
     name = "null_event"
 
 
@@ -20,6 +23,7 @@ class TrackStartEvent(GranitepyEvent):
     """
 
     def __init__(self, player, data):
+        super().__init__()
 
         self.player = player
         self.name = "track_start"
@@ -46,6 +50,7 @@ class TrackEndEvent(GranitepyEvent):
     """
 
     def __init__(self, player, data):
+        super().__init__()
 
         self.player = player
         self.name = "track_end"
@@ -72,6 +77,7 @@ class TrackStuckEvent(GranitepyEvent):
     """
 
     def __init__(self, player, data):
+        super().__init__()
 
         self.player = player
         self.name = "track_stuck"
@@ -97,6 +103,7 @@ class TrackExceptionEvent(GranitepyEvent):
     """
 
     def __init__(self, player, data):
+        super().__init__()
 
         self.player = player
         self.name = "track_exception"
@@ -124,6 +131,7 @@ class WebSocketClosedEvent(GranitepyEvent):
     """
 
     def __init__(self, player, data):
+        super().__init__()
 
         self.player = player
         self.name = "websocket_closed"
