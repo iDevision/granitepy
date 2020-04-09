@@ -145,6 +145,7 @@ class Player:
 
         self.voice_channel = voice_channel
 
+        # noinspection PyProtectedMember
         ws = self.bot._connection._get_websocket(self.guild.id)
         await ws.voice_state(self.guild.id, str(voice_channel.id))
 
@@ -167,6 +168,7 @@ class Player:
         await self.stop()
         self.voice_channel = None
 
+        # noinspection PyProtectedMember
         ws = self.bot._connection._get_websocket(self.guild.id)
         await ws.voice_state(self.guild.id, None)
 
