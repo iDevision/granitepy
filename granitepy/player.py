@@ -32,11 +32,10 @@ class Player:
         The track that is currently playing. Can be None if nothing is playing.
     """
 
-    def __init__(self, node: Node, guild: discord.Guild):
+    def __init__(self, node: Node, guild: discord.Guild, **kwargs):
 
         self.node = node
         self.guild = guild
-
         self.bot = self.node.bot
 
         self.voice_channel = None

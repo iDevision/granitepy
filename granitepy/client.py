@@ -134,7 +134,7 @@ class Client:
         # TODO better method of getting nodes.
         return random.choice([node for node in self.nodes.values()])
 
-    def get_player(self, guild: discord.Guild, cls: typing.Type[Player] = None):
+    def get_player(self, guild: discord.Guild, cls: typing.Type[Player] = None, **kwargs):
         """
         Tries to return the :class:`.Player` for the current :class:`discord.Guild`, If one doesnt exist it will be created.
 
@@ -166,7 +166,7 @@ class Client:
             cls = Player
 
         node = self.get_node()
-        player = cls(node, guild)
+        player = cls(node, guild, **kwargs)
         node.players[guild.id] = player
 
         return self.players[guild.id]
