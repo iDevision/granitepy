@@ -93,7 +93,7 @@ class Tremolo(Filter):
 
         if frequency < 0:
             raise exceptions.FilterInvalidArgument("Tremolo frequency must be more than 0.")
-        if 0 > depth >= 1:
+        if depth < 0 or depth > 1:
             raise exceptions.FilterInvalidArgument("Tremolo depth must be between 0 and 1.")
 
         self.frequency = frequency
@@ -121,9 +121,9 @@ class Vibrato(Filter):
     def __init__(self, *, frequency: float, depth: float):
 
         super().__init__()
-        if 0 > frequency >= 14:
+        if frequency < 0 or frequency > 14:
             raise exceptions.FilterInvalidArgument("Vibrato frequency must be between 0 and 14.")
-        if 0 > depth >= 1:
+        if depth < 0 or depth > 1:
             raise exceptions.FilterInvalidArgument("Vibrato depth must be between 0 and 1.")
 
         self.frequency = frequency
